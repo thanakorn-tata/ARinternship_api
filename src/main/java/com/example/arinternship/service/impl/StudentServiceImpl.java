@@ -27,23 +27,31 @@ public class StudentServiceImpl implements StudentService {
     @Override
     public Student update(Long id, Student student) {
         Student existing = repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Student not found"));
-        existing.setFullName(student.getFullName());
+                .orElseThrow(() -> new RuntimeException("Student not found with id: " + id));
+        
+        // Update all fields
+        existing.setFullname(student.getFullname());
         existing.setUniversity(student.getUniversity());
         existing.setFaculty(student.getFaculty());
         existing.setMajor(student.getMajor());
-        existing.setPhone(student.getPhone());
+        existing.setContactNumber(student.getContactNumber());
         existing.setEmail(student.getEmail());
-        existing.setDepartment(student.getDepartment());
-        existing.setInternshipPeriod(student.getInternshipPeriod());
-        existing.setComment(student.getComment());
+        existing.setInternDepartment(student.getInternDepartment());
+        existing.setInternDuration(student.getInternDuration());
+        existing.setAttachedProject(student.getAttachedProject());
+        existing.setGrade(student.getGrade());
+        existing.setCreatedBy(student.getCreatedBy());
         existing.setProfileFile(student.getProfileFile());
         existing.setProjectFile(student.getProjectFile());
+        
         return repository.save(existing);
     }
 
     @Override
     public void delete(Long id) {
+        if (!repository.existsById(id)) {
+            throw new RuntimeException("Student not found with id: " + id);
+        }
         repository.deleteById(id);
     }
 }
