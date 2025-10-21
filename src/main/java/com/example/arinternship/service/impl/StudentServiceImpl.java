@@ -5,11 +5,13 @@ import com.example.arinternship.repository.StudentRepository;
 import com.example.arinternship.service.StudentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class StudentServiceImpl implements StudentService {
 
     private final StudentRepository repository;
@@ -17,6 +19,12 @@ public class StudentServiceImpl implements StudentService {
     @Override
     public List<Student> findAll() {
         return repository.findAll();
+    }
+
+    @Override
+    public Student findById(Long id) {
+        return repository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Student not found with id: " + id));
     }
 
     @Override
@@ -28,7 +36,7 @@ public class StudentServiceImpl implements StudentService {
     public Student update(Long id, Student student) {
         Student existing = repository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Student not found with id: " + id));
-
+        
         // Update all fields
         existing.setFullname(student.getFullname());
         existing.setUniversity(student.getUniversity());
@@ -43,7 +51,7 @@ public class StudentServiceImpl implements StudentService {
         existing.setCreatedBy(student.getCreatedBy());
         existing.setProfileFile(student.getProfileFile());
         existing.setProjectFile(student.getProjectFile());
-
+        
         return repository.save(existing);
     }
 
