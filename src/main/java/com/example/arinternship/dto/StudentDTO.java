@@ -1,4 +1,4 @@
-package com.example.arinternship.dto;  // ✅ ต้องอยู่ใน dto package
+package com.example.arinternship.dto; // ✅ ต้องอยู่ใน dto package
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
@@ -9,7 +9,7 @@ import lombok.AllArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class StudentDTO {
-    
+
     private Long id;
 
     private String fullname;

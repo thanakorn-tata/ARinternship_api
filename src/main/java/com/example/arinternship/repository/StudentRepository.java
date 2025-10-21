@@ -12,7 +12,7 @@ public interface StudentRepository extends JpaRepository<Student, Long> {
     // - save(Student student)
     // - deleteById(Long id)
     // - existsById(Long id)
-    
+
     // ถ้าต้องการ custom query เพิ่มตรงนี้
     // เช่น: List<Student> findByUniversity(String university);
 }
