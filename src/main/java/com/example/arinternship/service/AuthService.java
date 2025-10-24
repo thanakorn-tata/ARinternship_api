@@ -34,12 +34,13 @@ public class AuthService {
     public void register(RegisterRequest request) {
         // Check if username or email exists
         if (userRepository.existsByUsername(request.getUsername())) {
-            throw new RuntimeException("ชื่อผู้ใช้นี้มีอยู่แล้ว");
+throw new RuntimeException("ชื่อผู้ใช้นี้มีอยู่แล้ว");
         }
         
         if (userRepository.existsByEmail(request.getEmail())) {
             throw new RuntimeException("อีเมลนี้มีอยู่แล้ว");
         }
+
         
         // Create new user
         User user = new User();
