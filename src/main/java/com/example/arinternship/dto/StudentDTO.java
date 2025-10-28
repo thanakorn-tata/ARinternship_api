@@ -2,21 +2,16 @@ package com.example.arinternship.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
 
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
 public class StudentDTO {
-
     private Long id;
     private String fullname;
     private String university;
     private String faculty;
     private String major;
     
-    @JsonProperty("contact_number")  // 🔥 ใช้ annotation เพื่อ map กับ JSON
+    @JsonProperty("contact_number")
     private String contactNumber;
     
     private String email;
@@ -32,12 +27,12 @@ public class StudentDTO {
     
     private String grade;
     
-    @JsonProperty("created_by")
-    private Long createdBy;
-    
     @JsonProperty("profile_file")
     private String profileFile;
     
     @JsonProperty("project_file")
     private String projectFile;
+    
+    @JsonProperty("created_by")
+    private Long createdBy;  // ← เปลี่ยนจาก Integer เป็น Long
 }
