@@ -43,7 +43,15 @@ public class StudentController {
     public ResponseEntity<StudentDTO> getStudentById(@PathVariable Long id) {
         try {
             Student student = studentService.findById(id);
-            return ResponseEntity.ok(studentMapper.toDTO(student));
+            StudentDTO dto = studentMapper.toDTO(student);
+            
+            // ✅ Debug: แสดงข้อมูลไฟล์ที่ส่งกลับ
+            System.out.println("📤 Sending student data:");
+            System.out.println("   - ID: " + dto.getId());
+            System.out.println("   - profile_file: " + dto.getProfileFile());
+            System.out.println("   - project_file: " + dto.getProjectFile());
+            
+            return ResponseEntity.ok(dto);
         } catch (RuntimeException e) {
             return ResponseEntity.notFound().build();
         }
@@ -134,12 +142,18 @@ public class StudentController {
 
             // ✅ กำหนด created_by
             dto.setCreatedBy(userId);
+            
+            System.out.println("💾 Creating student with userId: " + userId);
 
             if (profileFile != null && !profileFile.isEmpty()) {
-                dto.setProfileFile(saveFile(profileFile, "profile"));
+                String savedPath = saveFile(profileFile, "profile");
+                dto.setProfileFile(savedPath);
+                System.out.println("✅ Saved profile file: " + savedPath);
             }
             if (projectFile != null && !projectFile.isEmpty()) {
-                dto.setProjectFile(saveFile(projectFile, "project"));
+                String savedPath = saveFile(projectFile, "project");
+                dto.setProjectFile(savedPath);
+                System.out.println("✅ Saved project file: " + savedPath);
             }
 
             Student saved = studentService.save(studentMapper.toEntity(dto));
@@ -161,7 +175,7 @@ public class StudentController {
     }
 
     /**
-     * ✅ อัปเดตนักศึกษาพร้อมไฟล์
+     * ✅ อัปเดตนักศึกษาพร้อมไฟล์ (FIXED VERSION)
      * PUT /api/student/upload/{id}
      */
     @PutMapping("/upload/{id}")
@@ -186,6 +200,12 @@ public class StudentController {
             
             Student existing = studentService.findById(id);
             
+            System.out.println("📝 Updating student ID: " + id);
+            System.out.println("   - Existing profile_file: " + existing.getProfileFile());
+            System.out.println("   - Existing project_file: " + existing.getProjectFile());
+            System.out.println("   - Has new profile file: " + (profileFile != null && !profileFile.isEmpty()));
+            System.out.println("   - Has new project file: " + (projectFile != null && !projectFile.isEmpty()));
+            
             // ✅ ถ้าไม่ใช่ ADMIN และไม่ใช่เจ้าของข้อมูล = ห้ามแก้ไข
             if (!"ADMIN".equals(role)) {
                 if (existing.getCreatedBy() == null || 
@@ -200,17 +220,32 @@ public class StudentController {
             ObjectMapper mapper = new ObjectMapper();
             StudentDTO dto = mapper.readValue(studentJson, StudentDTO.class);
 
-            // ✅ คัดลอกข้อมูล (ไม่เปลี่ยน id, createdAt, createdBy)
-            BeanUtils.copyProperties(dto, existing, "id", "createdAt", "createdBy");
+            // ✅ 🔥 CRITICAL FIX: คัดลอกข้อมูลแต่ EXCLUDE ไฟล์ออก!
+            BeanUtils.copyProperties(dto, existing, 
+                "id", "createdAt", "createdBy", "profileFile", "projectFile");
 
+            // ✅ อัพเดทไฟล์เฉพาะตอนมีไฟล์ใหม่เท่านั้น
             if (profileFile != null && !profileFile.isEmpty()) {
-                existing.setProfileFile(saveFile(profileFile, "profile"));
+                String savedPath = saveFile(profileFile, "profile");
+                existing.setProfileFile(savedPath);
+                System.out.println("✅ Updated profile file to: " + savedPath);
+            } else {
+                System.out.println("ℹ️ No new profile file - keeping existing: " + existing.getProfileFile());
             }
+            
             if (projectFile != null && !projectFile.isEmpty()) {
-                existing.setProjectFile(saveFile(projectFile, "project"));
+                String savedPath = saveFile(projectFile, "project");
+                existing.setProjectFile(savedPath);
+                System.out.println("✅ Updated project file to: " + savedPath);
+            } else {
+                System.out.println("ℹ️ No new project file - keeping existing: " + existing.getProjectFile());
             }
 
             Student updated = studentService.save(existing);
+            
+            System.out.println("✅ Student updated successfully");
+            System.out.println("   - Final profile_file: " + updated.getProfileFile());
+            System.out.println("   - Final project_file: " + updated.getProjectFile());
             
             Map<String, Object> response = new HashMap<>();
             response.put("success", true);
@@ -349,7 +384,9 @@ public class StudentController {
      */
     private String saveFile(MultipartFile file, String type) throws IOException {
         Path dir = Paths.get(UPLOAD_DIR + type);
-        if (!Files.exists(dir)) Files.createDirectories(dir);
+        if (!Files.exists(dir)) {
+            Files.createDirectories(dir);
+        }
 
         String ext = Optional.ofNullable(file.getOriginalFilename())
                 .filter(f -> f.contains("."))
@@ -359,6 +396,7 @@ public class StudentController {
 
         Path filePath = dir.resolve(newName);
         Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+        
         return type + "/" + newName;
     }
 }
