@@ -1,8 +1,13 @@
 package com.example.arinternship.repository;
 
+import com.example.arinternship.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
-import com.example.arinternship.model.User;
+
+import java.util.Optional;
 
 public interface UserRepository extends JpaRepository<User, Long> {
-    User findByUsername(String username);
+
+    Optional<User> findByUsername(String username);
+
+    boolean existsByUsername(String username);
 }
