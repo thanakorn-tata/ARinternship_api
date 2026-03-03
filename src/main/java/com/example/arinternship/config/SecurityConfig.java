@@ -15,39 +15,19 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-
         http
-            // ❌ ปิด csrf (จำเป็นมากสำหรับ Angular)
             .csrf(csrf -> csrf.disable())
-
-            // ✅ เปิด cors
             .cors(Customizer.withDefaults())
-
-            // ✅ ตั้ง rule การเข้าถึง
             .authorizeHttpRequests(auth -> auth
-                // 🔓 auth APIs
-                .requestMatchers(
-                    "/api/auth/login",
-                    "/api/auth/register",
-                    "/api/auth/logout",
-                    "/api/auth/me"
-                ).permitAll()
-
-                // 🔓 static / public
-                .requestMatchers(
-                    "/",
-                    "/index.html",
-                    "/assets/**"
-                ).permitAll()
-
-                // 🔐 ที่เหลือต้อง login
+                .requestMatchers("/api/auth/**").permitAll()
+                .requestMatchers("/api/products/**").permitAll()
+                .requestMatchers("/api/cart/**").permitAll()
+                .requestMatchers("/api/users/**").permitAll()
+                .requestMatchers("/api/orders/**").permitAll()  // ✅
+                .requestMatchers("/", "/index.html", "/assets/**").permitAll()
                 .anyRequest().authenticated()
             )
-
-            // ❌ ไม่ใช้ form login ของ spring
             .formLogin(form -> form.disable())
-
-            // ❌ ไม่ใช้ basic auth
             .httpBasic(basic -> basic.disable());
 
         return http.build();

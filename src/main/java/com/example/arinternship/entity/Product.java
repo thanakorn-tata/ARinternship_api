@@ -20,6 +20,17 @@ public class Product {
     @Column(columnDefinition = "TEXT")
     private String description;
 
-    private String image;
+    private String category;
     private Integer stock;
+
+    @Lob
+    @Column(name = "image_data", columnDefinition = "LONGBLOB")
+    private byte[] imageData;
+
+    @Column(name = "image_type")
+    private String imageType;
+
+    // ✅ ใช้ columnDefinition ระบุชัดเจนให้ตรงกับ MySQL TINYINT(1)
+    @Column(name = "active", columnDefinition = "TINYINT(1) NOT NULL DEFAULT 1")
+    private Boolean active = true;
 }

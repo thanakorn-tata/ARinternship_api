@@ -1,5 +1,7 @@
 package com.example.arinternship.service;
 
+import com.example.arinternship.dto.RegisterRequest;
+import com.example.arinternship.dto.UserResponse;
 import com.example.arinternship.entity.User;
 import com.example.arinternship.repository.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -17,26 +19,34 @@ public class UserService {
         this.passwordEncoder = passwordEncoder;
     }
 
+    // ✅ LOGIN - คืน User entity (เก็บ session ใน controller)
     public User login(String username, String password) {
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new RuntimeException("ไม่พบผู้ใช้"));
+        User user = userRepository
+            .findByUsername(username)
+            .orElseThrow(() -> new RuntimeException("INVALID_CREDENTIALS"));
 
         if (!passwordEncoder.matches(password, user.getPassword())) {
-            throw new RuntimeException("รหัสผ่านไม่ถูกต้อง");
+            // ✅ ใช้ error เดียวกันทั้ง user not found และ wrong password
+            //    เพื่อป้องกัน User Enumeration Attack
+            throw new RuntimeException("INVALID_CREDENTIALS");
         }
+
         return user;
     }
 
-    public User register(String username, String password) {
-        if (userRepository.existsByUsername(username)) {
+    // ✅ REGISTER
+    public void register(RegisterRequest req) {
+        if (userRepository.existsByUsername(req.getUsername())) {
             throw new RuntimeException("username ซ้ำ");
         }
 
         User user = new User();
-        user.setUsername(username);
-        user.setPassword(passwordEncoder.encode(password));
+        user.setUsername(req.getUsername());
+        user.setPassword(passwordEncoder.encode(req.getPassword()));
+        user.setEmail(req.getEmail());
+        user.setFullname(req.getFullname());
         user.setRole("USER");
 
-        return userRepository.save(user);
+        userRepository.save(user);
     }
 }
