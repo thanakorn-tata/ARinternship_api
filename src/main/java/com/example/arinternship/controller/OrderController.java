@@ -70,7 +70,7 @@ public class OrderController {
         return res;
     }
 
-    // ✅ เพิ่ม @Transactional เพราะมี deleteByUser
+    // ✅ สร้าง Order จาก Cart
     @Transactional
     @PostMapping
     public ResponseEntity<?> createOrder(
@@ -106,7 +106,7 @@ public class OrderController {
         order.setItems(orderItems);
 
         Order saved = orderRepository.save(order);
-        cartRepository.deleteByUser(user);  // ล้างตะกร้า
+        cartRepository.deleteByUser(user);
 
         return ResponseEntity.ok(toOrderResponse(saved));
     }
@@ -150,16 +150,29 @@ public class OrderController {
         }).orElse(ResponseEntity.notFound().build());
     }
 
-    // ✅ Admin ยืนยัน Order
+    // ✅ Admin ยืนยัน Order — ลด stock สินค้าด้วย
     @Transactional
     @PatchMapping("/{id}/confirm")
     public ResponseEntity<?> confirmOrder(@PathVariable Long id, HttpSession session) {
         if (!isAdmin(session)) return ResponseEntity.status(403).body("ไม่มีสิทธิ์");
 
         return orderRepository.findById(id).map(order -> {
+
+            // ✅ ลด stock ทุกรายการใน order
+            if (order.getItems() != null) {
+                for (OrderItem item : order.getItems()) {
+                    productRepository.findById(item.getProductId()).ifPresent(product -> {
+                        int newStock = product.getStock() - item.getQuantity();
+                        product.setStock(Math.max(newStock, 0)); // ไม่ให้ติดลบ
+                        productRepository.save(product);
+                    });
+                }
+            }
+
             order.setStatus("CONFIRMED");
             order.setConfirmedAt(LocalDateTime.now());
             orderRepository.save(order);
+
             return ResponseEntity.ok(Map.of("message", "ยืนยัน order สำเร็จ", "status", "CONFIRMED"));
         }).orElse(ResponseEntity.notFound().build());
     }

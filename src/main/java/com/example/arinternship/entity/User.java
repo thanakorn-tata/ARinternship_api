@@ -32,6 +32,16 @@ public class User implements Serializable {   // ✅ เพิ่ม Serializabl
     @Column
     private Boolean active = true;
 
+    // ✅ ที่อยู่จัดส่ง default
+    @Column(name = "default_name", length = 255)
+    private String defaultName;
+
+    @Column(name = "default_phone", length = 20)
+    private String defaultPhone;
+
+    @Column(name = "default_address", columnDefinition = "TEXT")
+    private String defaultAddress;
+
     @Column(name = "created_at")
     private LocalDateTime createdAt = LocalDateTime.now();
 
@@ -68,6 +78,15 @@ public class User implements Serializable {   // ✅ เพิ่ม Serializabl
 
     public Boolean getActive()               { return active; }
     public void setActive(Boolean active)    { this.active = active; }
+
+    public String getDefaultName()                   { return defaultName; }
+    public void setDefaultName(String defaultName)   { this.defaultName = defaultName; }
+
+    public String getDefaultPhone()                  { return defaultPhone; }
+    public void setDefaultPhone(String defaultPhone) { this.defaultPhone = defaultPhone; }
+
+    public String getDefaultAddress()                    { return defaultAddress; }
+    public void setDefaultAddress(String defaultAddress) { this.defaultAddress = defaultAddress; }
 
     public LocalDateTime getCreatedAt()                    { return createdAt; }
     public void setCreatedAt(LocalDateTime createdAt)      { this.createdAt = createdAt; }

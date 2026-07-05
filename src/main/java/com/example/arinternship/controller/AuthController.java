@@ -46,6 +46,11 @@ public class AuthController {
             return ResponseEntity.status(401).body("password ไม่ถูกต้อง");
         }
 
+        // ✅ เช็ค active ก่อน login
+        if (!Boolean.TRUE.equals(user.getActive())) {
+            return ResponseEntity.status(403).body("บัญชีนี้ถูกระงับการใช้งาน กรุณาติดต่อแอดมิน");
+        }
+
         // ✅ เก็บ session
         session.setAttribute("USER", user);
         session.setAttribute("ROLE", user.getRole());
