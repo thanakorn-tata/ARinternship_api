@@ -3,16 +3,20 @@ package com.example.arinternship.config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import org.springframework.web.filter.CorsFilter;
 
 import java.util.List;
 
 @Configuration
 public class CorsConfig {
 
+    // ✅ เปลี่ยนจาก CorsFilter เป็น CorsConfigurationSource แบบ Bean ตรงๆ
+    // เพราะ SecurityConfig ใช้ .cors(Customizer.withDefaults()) ซึ่งจะไปหา Bean
+    // ชนิด CorsConfigurationSource มาใช้เอง ถ้าไม่ประกาศแบบนี้ Spring Security
+    // จะมองไม่เห็น config ที่เราตั้งไว้ แล้ว block preflight request (OPTIONS) ด้วย 403
     @Bean
-    public CorsFilter corsFilter() {
+    public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
 
         // ✅ ต้องระบุ origin ตรงๆ ห้ามใช้ * เมื่อ allowCredentials = true
@@ -29,6 +33,6 @@ public class CorsConfig {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);
 
-        return new CorsFilter(source);
+        return source;
     }
 }
