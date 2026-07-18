@@ -1,0 +1,15 @@
+name: Keep Backend Alive
+
+on:
+  schedule:
+    # รันทุก 10 นาที (ต้องน้อยกว่า 15 นาทีที่ Render ใช้ตัดสินใจ sleep)
+    - cron: '*/10 * * * *'
+  workflow_dispatch:
+    # ปุ่มให้กดรันเองได้ทันทีจากหน้า GitHub Actions ด้วย (เผื่ออยากทดสอบ)
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping backend to keep Render + Supabase awake
+        run: curl -f https://arinternship-api.onrender.com/api/products
