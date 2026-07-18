@@ -16,7 +16,11 @@ public class CorsConfig {
         CorsConfiguration config = new CorsConfiguration();
 
         // ✅ ต้องระบุ origin ตรงๆ ห้ามใช้ * เมื่อ allowCredentials = true
-        config.setAllowedOrigins(List.of("http://localhost:4200"));
+        // เก็บ localhost ไว้ด้วยสำหรับตอน dev บนเครื่องตัวเอง + เพิ่ม domain จริงของ Vercel
+        config.setAllowedOrigins(List.of(
+                "http://localhost:4200",
+                "https://final-numprig.vercel.app"
+        ));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
         config.setAllowCredentials(true);  // ✅ อนุญาต cookie ข้าม origin
