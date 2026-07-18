@@ -24,13 +24,13 @@ public class Product {
     private Integer stock;
 
     @Lob
-    @Column(name = "image_data", columnDefinition = "LONGBLOB")
+    @Column(name = "image_data", columnDefinition = "BYTEA")
     private byte[] imageData;
 
     @Column(name = "image_type")
     private String imageType;
 
-    // ✅ ใช้ columnDefinition ระบุชัดเจนให้ตรงกับ MySQL TINYINT(1)
-    @Column(name = "active", columnDefinition = "TINYINT(1) NOT NULL DEFAULT 1")
+    // ✅ Postgres ใช้ BOOLEAN แทน MySQL TINYINT(1)
+    @Column(name = "active", columnDefinition = "BOOLEAN NOT NULL DEFAULT true")
     private Boolean active = true;
 }

@@ -31,7 +31,7 @@ public class Order {
     private String status = "PENDING_PAYMENT";
 
     @Lob
-    @Column(name = "slip_image", columnDefinition = "LONGBLOB")
+    @Column(name = "slip_image", columnDefinition = "BYTEA")
     private byte[] slipImage;
 
     @Column(name = "slip_image_type")
