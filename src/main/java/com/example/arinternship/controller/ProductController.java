@@ -16,7 +16,6 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/products")
-@CrossOrigin(origins = "http://localhost:4200", allowCredentials = "true")
 public class ProductController {
 
     private final ProductRepository repository;

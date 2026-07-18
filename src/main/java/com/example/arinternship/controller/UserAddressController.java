@@ -14,7 +14,6 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/addresses")
-@CrossOrigin(origins = "http://localhost:4200", allowCredentials = "true")
 public class UserAddressController {
 
     private final UserAddressRepository addressRepository;
