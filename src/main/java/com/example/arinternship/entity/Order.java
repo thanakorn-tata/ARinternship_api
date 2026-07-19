@@ -3,6 +3,8 @@ package com.example.arinternship.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -30,7 +32,8 @@ public class Order {
     @Column(nullable = false)
     private String status = "PENDING_PAYMENT";
 
-    @Lob
+    // ✅ ไม่ใช้ @Lob เพราะบน Postgres จะไปเก็บเป็น Large Object (OID/bigint) แทน bytea ตรงๆ
+    @JdbcTypeCode(SqlTypes.VARBINARY)
     @Column(name = "slip_image", columnDefinition = "BYTEA")
     private byte[] slipImage;
 
